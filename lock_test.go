@@ -4,6 +4,7 @@ import (
 	"runtime"
 	"sync/atomic"
 	"testing"
+	"time"
 )
 
 func init() {
@@ -43,7 +44,10 @@ func TestTryLock(t *testing.T) {
 func TestConcurrentLock(t *testing.T) {
 	base := uint32(0)
 	Lock(&base)
-	go Unlock(&base) // remote unlock
+	go func() {
+		time.Sleep(1 * time.Microsecond)
+		Unlock(&base) // remote unlock
+	}()
 	Lock(&base)
 }
 

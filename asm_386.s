@@ -3,16 +3,19 @@
 #define NOSPLIT 4
 
 TEXT ·Lock(SB),NOSPLIT,$0-4
-	MOVL l+0(SB), BP
-try:
-	MOVL  $1, AX
-	XCHGL AX, 0(BP)
-	TESTL AX, AX
-	JNZ   wait
+	MOVL 	l+0(SB), BP
+acquire:
+	MOVL	$1, AX
+	XCHGL 	AX, 0(BP)
+	TESTL 	AX, AX
+	JNZ   	spin
 	RET
-wait:
+spin:
 	PAUSE
-	JMP try
+	MOVL	0(BP), CX
+	TESTL	CX, CX
+	JZ		acquire	
+	JMP 	spin
 
 
 TEXT ·Unlock(SB),NOSPLIT,$0-4

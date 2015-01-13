@@ -4,16 +4,20 @@
 
 // Lock(l *uint32)
 TEXT ·Lock(SB),NOSPLIT,$0-8
-	MOVQ   l+0(FP), BP
-spin:
-	MOVL   $1, AX     
-	XCHGL  AX, 0(BP)
-	TESTL  AX, AX
-	JNZ    wait
+	MOVQ 	l+0(FP), BP
+acquire:
+	MOVL 	$1, AX     
+	XCHGL 	AX, 0(BP)
+	TESTL 	AX, AX
+	JNZ 	spin
 	RET
-wait:
+spin:
 	PAUSE
-	JMP    spin
+	MOVL   	0(BP), CX	// spin on dirty read
+	TESTL  	CX, CX
+	JZ 		acquire 
+	JMP 	spin
+
 
 // Unlock(l *uint32)
 TEXT ·Unlock(SB),NOSPLIT,$0-8
@@ -21,6 +25,7 @@ TEXT ·Unlock(SB),NOSPLIT,$0-8
 	XORL    AX, AX
 	MOVL    AX, 0(BP)
 	RET
+
 
 // TryLock(l *uint32) bool
 TEXT ·TryLock(SB),NOSPLIT,$0-9
