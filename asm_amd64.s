@@ -2,24 +2,32 @@
 
 #define NOSPLIT 4
 
+// Lock(l *uint32)
 TEXT ·Lock(SB),NOSPLIT,$0-8
-	MOVQ   l+0(FP), BP		// BP = l
-
+	MOVQ   l+0(FP), BP
 spin:
-	MOVL   $1, AX			// AX = 1      
-	XCHGL  AX, 0(BP)        // swap(AX, *BP)
-	TESTL  AX, AX			// if AX != 0
-	JNZ    wait				// goto wait
-	RET						// done
-
+	MOVL   $1, AX     
+	XCHGL  AX, 0(BP)
+	TESTL  AX, AX
+	JNZ    wait
+	RET
 wait:
-	PAUSE					// pause
-	JMP    spin				// try again
+	PAUSE
+	JMP    spin
 
-
+// Unlock(l *uint32)
 TEXT ·Unlock(SB),NOSPLIT,$0-8
-	MOVQ 	l+0(FP), BP		// BP = l
-	XORL    AX, AX			// AX = 0
-	MOVL    AX, 0(BP)		// set *l=0
-	RET						// return
+	MOVQ 	l+0(FP), BP
+	XORL    AX, AX
+	MOVL    AX, 0(BP)
+	RET
+
+// TryLock(l *uint32) bool
+TEXT ·TryLock(SB),NOSPLIT,$0-9
+	MOVQ	l+0(FP), BP
+	MOVL	$1, AX
+	XCHGL 	AX, 0(BP)
+	TESTL	AX, AX
+	SETEQ	swapped+8(FP)
+	RET
 

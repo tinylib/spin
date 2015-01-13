@@ -12,3 +12,7 @@ func Lock(l *uint32) {
 func Unlock(l *uint32) {
 	atomic.StoreUint32(l, 0)
 }
+
+func TryLock(l *uint32) bool {
+	return atomic.CompareAndSwapUint32(l, 0, 1)
+}
