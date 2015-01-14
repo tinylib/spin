@@ -2,10 +2,14 @@
 
 package spin
 
-import "sync/atomic"
+import (
+	"runtime"
+	"sync/atomic"
+)
 
 func Lock(l *uint32) {
 	for !atomic.CompareAndSwapUint32(l, 0, 1) {
+		runtime.Gosched()
 	}
 }
 

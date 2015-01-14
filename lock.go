@@ -23,13 +23,16 @@
 //
 package spin
 
+//go:noescape
+
 // Lock spinlocks on
 // an address. 0 is
 // "unlocked," and 1
 // is "locked."
 //
-//go:noescape
 func Lock(l *uint32)
+
+//go:noescape
 
 // TryLock attempts
 // to atomically
@@ -38,11 +41,11 @@ func Lock(l *uint32)
 // and returns whether or
 // not it was successful.
 //
-//go:noescape
 func TryLock(l *uint32) bool
+
+//go:noescape
 
 // Unlock unlocks a
 // spinlock.
 //
-//go:noescape
 func Unlock(l *uint32)
