@@ -9,7 +9,12 @@
 // they should only be used to protect
 // extremely small (read: fast) regions of code,
 // particularly in the case where that code is
-// usually uncontested.
+// usually uncontended.
+//
+// You can embed a spinlock inside a data
+// structure simply by adding a uint32 field,
+// and then passing a pointer to that field
+// to the Lock() and Unlock() functions.
 //
 // It is also possible to use
 // TryLock() to do useful work while
